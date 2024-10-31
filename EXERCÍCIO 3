@@ -1,0 +1,22 @@
+programa {
+    
+    inteiro n1, n2, n3, r
+    caracter notas
+
+    funcao inicio(){
+      
+    escreva ("Digite a primeira nota:\n")
+    leia (n1)
+    escreva ("Digite a segunda nota:\n")
+    leia (n2)
+    escreva ("Digite a terceira nota:\n")
+    leia (n3)
+
+    r = n1 + n2 + n3 / 3
+
+    escreva ("A sua média é:\n", r)  
+
+
+    }
+  }
+
