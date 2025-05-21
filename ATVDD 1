@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="widtdevice-widthh=, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="quadradp"></div>
+    <h2>Senac</h2>
+    <div class="bolha"></div>
+    <div class="bolha2"></div>
+    <div class></div>
+</body>
+</html>
