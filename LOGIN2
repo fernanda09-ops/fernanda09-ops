@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Login</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Criar Conta</h2>
+    
+            <input type="nome" placeholder="Nome completo" required>
+            <input type="usuario" placeholder="Usuário" required>
+            <input type="password" placeholder="Senha" required>
+            <button type="submit">Cadastrar</button>
+    
+        <a href="style.css" class="link-login">Já tenho conta</a>
+    </div>
+    </body>
+    </html>
