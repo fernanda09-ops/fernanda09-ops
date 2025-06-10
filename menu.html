@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu de Navegação</title>
+
+</head>
+<body>
+
+  <nav>
+    <ul>
+      <li><a href="inicio">Início</a></li>
+      <li><a href="sobre">Sobre</a></li>
+      <li><a href="servicos">Serviços</a></li>
+      <li><a href="contato">Contato</a></li>
+    </ul>
+  </nav>
+    <div class="lanterna"></div>
+
+    <script>
+        document.addEventListener("mousemove", (e)=> {
+            const x = e.clientX + "px"
+            const y = e.clientY + "px"
+            document.querySelector(".lanterna").style.setProperty("--x", x);
+            document.querySelector(".lanterna").style.setProperty("--y", y);
+        })
+    </script>
+  
+</body>
+</html>
