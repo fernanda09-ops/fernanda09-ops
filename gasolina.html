@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Gasolina</title>
+  <link rel="stylesheet" href="gasolina.css">
+</head>
+<body>
+    <div class="container">
+        <div class="t1">Cálculo do Combustível</div>
+            
+           
+           
+        <div class="inp">
+        <div class="c1">
+            Distância Percorrida: <br>
+            <input type="decimal" id="distancia" placeholder="0,00">
+        </div>
+        <div class="c1">
+             Consumo Médio do veículo: <br>
+            <input type="decimal" id="consumo" placeholder="0,00">
+        </div>
+        <div class="c1">
+             Preço por litro: <br>
+            <input type="decimal" id="consumo" placeholder="0,00">
+        </div>
+        </div>
+        <button onclick="calcular()">Calcular</button>
+
+        <button onclick="limpar()">Limpar</button>
+
+        <div id="resultado"></div> 
+
+    </div>
+
+</body>
+</html>
