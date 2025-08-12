@@ -1,0 +1,259 @@
+import React, { useState } from 'react';
+import { SafeAreaView, Text, View, StyleSheet, TouchableOpacity, Image, ScrollView} from 'react-native';
+import {MaterialIcons, MaterialCommunityIcons} from '@expo/vector-icons';
+
+export default function App() {
+  const [balanceVisible, setBalanceVisible] = useState(false);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.cont}>
+          <View style={styles.userIcon}>
+            <MaterialCommunityIcons name="account" size={28} color='#fff'/>
+          </View>
+
+          <Text style={styles.headerText}>Olá, Fernanda</Text>
+        </View>
+        
+        <View style={styles.headerIcons}>
+          <View style={styles.icons}>
+            <TouchableOpacity onPress={() => setBalanceVisible(!balanceVisible)}>
+              <MaterialCommunityIcons 
+                name={balanceVisible ? "eye": "eye-off"} 
+                size={28} 
+                color='#fff'
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+            <MaterialCommunityIcons name="help-circle" size={28} color='#fff' style={styles.icon}/>
+            <MaterialCommunityIcons name="email" size={28} color='#fff' style={styles.icon}/>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.mainCard}>
+        <Text style={styles.cardTitle}>Conta</Text>
+        
+        <View style={styles.balanceContainer}>
+          <Text style={styles.currencySymbol}>R$</Text>
+          <Text style={styles.balance}>
+            {balanceVisible ? "1.437,75" : "••••,••"}
+          </Text>
+        </View>
+        
+        <Text style={styles.cardFooter}>Saldo disponível</Text>
+          <View style={styles.linha}></View>
+
+        
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+        <View style={styles.cardActions}>
+          <View style={styles.itens}>
+              <TouchableOpacity style={styles.actionButton}>
+                <MaterialCommunityIcons name="" size={24} color='#000'/>
+              </TouchableOpacity>
+              <Text style={styles.actionText}>Pix</Text>
+          </View>
+
+          <View style={styles.itens}>
+              <TouchableOpacity style={styles.actionButton}>
+                <MaterialCommunityIcons name="" size={24} color='#000'/>
+              </TouchableOpacity>
+              <Text style={styles.actionText}>Pagar</Text>
+          </View>
+
+          <View style={styles.itens}>
+              <TouchableOpacity style={styles.actionButton}>
+                <MaterialCommunityIcons name="qr-code-2" size={24} color='#000'/>
+              </TouchableOpacity>
+              <Text style={styles.actionText}>Transferir</Text>
+          </View>
+
+           <View style={styles.itens}>
+              <TouchableOpacity style={styles.actionButton}>
+                <MaterialCommunityIcons name="qrcode-scan" size={24} color='#000'/>
+              </TouchableOpacity>
+              <Text style={styles.actionText}>Depositar</Text>
+          </View>
+
+          
+        </View>
+      </ScrollView>
+      </View>
+
+      <View style={styles.creditCardSection}>
+        <View style={styles.sectionHeader}>
+        <MaterialIcons name="style" size={24} color='#fff'/>
+          <Text style={styles.sectionTitle}>Meus cartões</Text>
+        </View>
+      </View>
+        
+      <View style={styles.mainCard}>
+        <Text style={styles.cardTitle}>Cartão de Crédito</Text>
+        <Text style={styles.fatura}>Fatura atual</Text>
+
+        <View style={styles.balanceContainer}>
+          <Text style={styles.currencySymbol}>R$</Text>
+          <Text style={styles.balance}>{"585,00"}</Text>
+        </View>
+        <Text style={styles.cardFooter}>Limite disponível R$ 1.348,00</Text>
+        <View style={styles.linha}></View>
+        </View>
+
+    </SafeAreaView>
+    
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  
+  header: {
+    width: 'auto',
+    height: 200,
+    backgroundColor: '#820ad1',
+    paddingTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  cont: {
+    gap: 40,
+    margin: 10,
+  },
+
+  headerText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+
+  userIcon: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#9d49d5',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  headerIcons: {
+    margin: 10,
+    position: 'absolute',
+    top: 48,
+    right: 10,
+  },
+
+  icons: {
+    flexDirection: 'row',
+    
+  },
+
+  icon: {
+    marginLeft: 20,
+  },
+
+  mainCard: {
+    backgroundColor: '#fff',
+    padding: 20,
+    // marginTop: 40,
+  },
+
+  cardTitle: {
+    color: '#000',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    alignItems: 'start'
+  },
+
+  balanceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+    
+  },
+
+  currencySymbol: {
+    color: '#000',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginRight: 5,
+  },
+
+  balance: {
+    color: '#000',
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+
+  cardFooter: {
+    color: '#000',
+    fontSize: 19,
+    marginBottom: 25,
+  },
+
+  cardActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    gap: 10,
+  },
+
+    actionButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E4E4EB',
+    borderRadius: 100,
+    width: 60,
+    height: 60
+  },
+
+  actionText: {
+    color: '#000',
+    fontSize: 14,
+    marginTop: 5,
+  },
+
+  creditCardSection: {
+    backgroundColor: '#E4E4EB',
+    borderRadius: 10,
+    marginHorizontal: 20,
+    width: 375,
+    height: 70,
+    marginTop: 10,
+    alignItems: 'start',
+   
+  },
+
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+    gap: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+
+  sectionTitle: {
+    color: '#000',
+    fontSize: 30,
+    fontWeight: 'bold',
+    
+  },
+
+  itens:{
+    alignItems: 'center'
+  },
+
+  linha: {
+    height: 1,
+    backgroundColor: 'grey'
+  },
+
+});
