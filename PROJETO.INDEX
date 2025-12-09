@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sistema de Agendamento Automático</title>
+  <link rel="stylesheet" href="pai.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>Sistema de Agendamento</h1>
+      <p class="sub">Automático — Pequenos Negócios</p>
+    </div>
+    <nav>
+      <button id="open-admin" class="btn small">Painel</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card form-card">
+      <h2>Agendar Horário</h2>
+      <p class="muted">Preencha seus dados. O sistema bloqueia conflitos de horário.</p>
+
+      <form id="form" class="form" onsubmit="return false;">
+        <div class="row">
+          <div class="field">
+            <label for="nome">Nome</label>
+            <input id="nome" type="text" placeholder="Nome completo" required>
+          </div>
+
+          <div class="field">
+            <label for="telefone">Telefone</label>
+            <input id="telefone" type="tel" placeholder="(99) 99999-9999" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="servico">Serviço</label>
+            <select id="servico">
+              <option value="corte">Corte de Cabelo (45min)</option>
+              <option value="manicure">Manicure (40min)</option>
+              <option value="depilacao">Depilação (30min)</option>
+            </select>
+          </div>
+
+          <div class="field small-input">
+            <label for="data">Data</label>
+            <input id="data" type="date" required>
+          </div>
+
+          <div class="field small-input">
+            <label for="hora">Hora</label>
+            <input id="hora" type="time" required>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="agendar" class="btn">Agendar</button>
+          <button id="limpar" class="btn secondary" type="button">Limpar</button>
+          <span id="msg" class="msg"></span>
+        </div>
+      </form>
+
+      <hr>
+
+      <h3>Seus Agendamentos</h3>
+      <div id="lista" class="list empty">Nenhum agendamento.</div>
+    </section>
+
+    <aside class="card info-card">
+      <h3>Informações</h3>
+      <p class="muted">Protótipo: os dados ficam no navegador. Para persistência entre dispositivos, integre um backend (Firebase, Node + DB).</p>
+
+      <div class="side-actions">
+        <button id="export-json" class="btn small">Exportar JSON</button>
+        <button id="clear-all" class="btn small secondary">Limpar tudo</button>
+      </div>
+
+      <hr>
+
+      <h4>Serviços</h4>
+      <ul class="services">
+        <li>Corte de Cabelo — 45 min — R$35</li>
+        <li>Manicure — 40 min — R$30</li>
+        <li>Depilação — 30 min — R$25</li>
+      </ul>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    Protótipo TCC — Sistema de Agendamento Automático • Desenvolvido localmente
+  </footer>
+
+  <!-- Painel admin simples -->
+  <div id="modal-admin" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3>Painel Administrativo</h3>
+        <button id="close-admin" class="btn small secondary">Fechar</button>
+      </header>
+
+      <div class="admin-login">
+        <input id="admin-pass" placeholder="Senha do painel" type="password">
+        <button id="admin-login" class="btn small">Entrar</button>
+      </div>
+
+      <div id="admin-area" class="admin-area hidden">
+        <div class="admin-top">
+          <span id="total">0 agendamentos</span>
+          <div class="admin-controls">
+            <button id="export-csv" class="btn small">Exportar CSV</button>
+            <button id="delete-all" class="btn small secondary">Excluir todos</button>
+          </div>
+        </div>
+        <div id="admin-list" class="admin-list">Sem agendamentos.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // SCRIPT MÍNIMO - necessário para funcionalidade (armazenamento + prevenção de conflitos)
+    const KEY = 'agendamentos_v1';
+
+    // util helpers
+    const $ = id => document.getElementById(id);
+    const format = d => new Date(d).toLocaleString('pt-BR', { dateStyle:'short', timeStyle:'short' });
+
+    // init
+    function init() {
+      // set min date
+      const today = new Date().toISOString().split('T')[0];
+      $('data').min = today;
+
+      // events
+      $('agendar').addEventListener('click', handleAgendar);
+      $('limpar').addEventListener('click', ()=>{ $('form').reset(); $('msg').textContent=''; renderList(); });
+      $('export-json').addEventListener('click', exportJson);
+      $('clear-all').addEventListener('click', clearAllConfirm);
+
+      // admin
+      $('open-admin').addEventListener('click', ()=> showAdmin(true));
+      $('close-admin').addEventListener('click', ()=> showAdmin(false));
+      $('admin-login').addEventListener('click', adminLogin);
+      $('export-csv').addEventListener('click', exportCSV);
+      $('delete-all').addEventListener('click', deleteAllConfirm);
+
+      renderList();
+    }
+
+    function getBookings(){ return JSON.parse(localStorage.getItem(KEY) || '[]'); }
+    function saveBookings(list){ localStorage.setItem(KEY, JSON.stringify(list)); }
+
+    function handleAgendar(){
+      const nome = $('nome').value.trim();
+      const telefone = $('telefone').value.trim();
+      const servico = $('servico').value;
+      const data = $('data').value;
+      const hora = $('hora').value;
+      const msg = $('msg');
+
+      if(!nome || !telefone || !data || !hora){ msg.textContent='Preencha todos os campos.'; return; }
+
+      const dt = new Date(`${data}T${hora}`);
+      if(isNaN(dt)) { msg.textContent='Data/hora inválida.'; return; }
+
+      // business hours 09:00-18:00
+      const h = dt.getHours();
+      if(h < 9 || h > 18){ msg.textContent='Horário fora do expediente (09:00–18:00).'; return; }
+
+      // prevent conflict: same service same datetime
+      const list = getBookings();
+      const exists = list.some(b => b.servico === servico && b.dataHora === dt.toISOString());
+      if(exists){ msg.textContent='Conflito: já existe agendamento para esse serviço neste horário.'; return; }
+
+      const names = {corte:'Corte de Cabelo', manicure:'Manicure', depilacao:'Depilação'};
+      const newB = {
+        id: 'b_'+Date.now(),
+        nome, telefone, servico,
+        servicoName: names[servico] || servico,
+        dataHora: dt.toISOString(),
+        createdAt: new Date().toISOString()
+      };
+
+      list.push(newB);
+      saveBookings(list);
+      msg.textContent = 'Agendamento realizado com sucesso!';
+      $('form').reset();
+      renderList();
+      setTimeout(()=> msg.textContent='', 3500);
+    }
+
+    function renderList(){
+      const list = getBookings().slice().sort((a,b)=> new Date(a.dataHora)-new Date(b.dataHora));
+      const div = $('lista');
+      div.innerHTML = '';
+      if(list.length === 0){ div.classList.add('empty'); div.textContent='Nenhum agendamento.'; return; }
+      div.classList.remove('empty');
+      list.forEach(b=>{
+        const el = document.createElement('div');
+        el.className = 'item';
+        el.innerHTML = `<div class="item-left"><strong>${escapeHtml(b.nome)}</strong><div class="muted">${escapeHtml(b.servicoName)}</div></div>
+                        <div class="item-right"><div>${format(b.dataHora)}</div><div class="muted">Contato: ${escapeHtml(b.telefone)}</div></div>`;
+        div.appendChild(el);
+      });
+    }
+
+    // admin modal
+    function showAdmin(open){
+      const modal = document.getElementById('modal-admin');
+      modal.style.display = open ? 'flex' : 'none';
+      if(!open) { $('admin-pass').value=''; $('admin-area').classList.add('hidden'); }
+      updateAdminStats();
+    }
+
+    function adminLogin(){
+      const pass = $('admin-pass').value;
+      if(pass === 'admin123'){ // trocar para segurança real em produção
+        $('admin-area').classList.remove('hidden');
+        renderAdminList();
+      } else alert('Senha incorreta.');
+    }
+
+    function renderAdminList(){
+      const list = getBookings().slice().sort((a,b)=> new Date(a.dataHora)-new Date(b.dataHora));
+      const cont = $('admin-list'); cont.innerHTML='';
+      if(list.length===0){ cont.textContent='Nenhum agendamento.'; return; }
+      list.forEach(b=>{
+        const row = document.createElement('div');
+        row.className = 'admin-row';
+        row.innerHTML = `<div class="admin-info"><strong>${escapeHtml(b.nome)}</strong> — ${escapeHtml(b.servicoName)}<div class="muted">${format(b.dataHora)} • ${escapeHtml(b.telefone)}</div></div>
+                         <div class="admin-actions"><button class="btn small secondary" data-id="${b.id}">Excluir</button></div>`;
+        cont.appendChild(row);
+      });
+      // bind delete
+      cont.querySelectorAll('button[data-id]').forEach(btn=>{
+        btn.addEventListener('click', e=>{
+          const id = e.currentTarget.dataset.id;
+          if(confirm('Excluir este agendamento?')){
+            const updated = getBookings().filter(x=> x.id !== id);
+            saveBookings(updated);
+            renderAdminList();
+            renderList();
+            updateAdminStats();
+          }
+        });
+      });
+      updateAdminStats();
+    }
+
+    function updateAdminStats(){
+      const total = getBookings().length;
+      $('total').textContent = total + (total === 1 ? ' agendamento' : ' agendamentos');
+    }
+
+    // exports & clears
+    function exportJson(){
+      const data = getBookings();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      download(blob, 'agendamentos.json');
+    }
+
+    function exportCSV(){
+      const data = getBookings();
+      if(!data.length){ alert('Sem dados para exportar.'); return; }
+      const header = ['id','nome','telefone','servico','servicoName','dataHora','createdAt'].join(',');
+      const rows = data.map(d => [d.id, `"${d.nome.replace(/"/g,'""')}"`, `"${d.telefone}"`, d.servico, `"${d.servicoName.replace(/"/g,'""')}"`, d.dataHora, d.createdAt].join(','));
+      const csv = [header].concat(rows).join('\\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      download(blob, 'agendamentos.csv');
+    }
+
+    function clearAllConfirm(){
+      if(confirm('Apagar todos os agendamentos armazenados no navegador?')){
+        localStorage.removeItem(KEY);
+        renderList();
+        alert('Agendamentos apagados.');
+      }
+    }
+    function deleteAllConfirm(){
+      if(confirm('Excluir todos os agendamentos permanentemente?')){
+        localStorage.removeItem(KEY);
+        renderAdminList();
+        renderList();
+        updateAdminStats();
+      }
+    }
+
+    // utils
+    function download(blob, filename){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=> URL.revokeObjectURL(url), 3000);
+    }
+
+    function escapeHtml(s){ return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    // boot
+    init();
+  </script>
+</body>
+</html>
