@@ -1,0 +1,156 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #fffaf3;
+  color: #333;
+}
+
+/* TOPO */
+.topo {
+  background: linear-gradient(135deg, #d35400, #e67e22);
+  color: white;
+  text-align: center;
+  padding: 30px 15px;
+}
+
+.topo h1 {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+/* PRODUTOS */
+.produtos {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.produtos h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 25px;
+}
+
+.card {
+  background: white;
+  width: 260px;
+  border-radius: 12px;
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+}
+
+.card h3 {
+  margin: 12px 0 5px;
+}
+
+.card p {
+  font-weight: bold;
+  color: #d35400;
+}
+
+.card button {
+  background: #e67e22;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 85%;
+  margin: 12px auto 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.3s;
+}
+
+.card button:hover {
+  background: #d35400;
+}
+
+/* PEDIDO */
+.pedido {
+  background: #f6e58d;
+  padding: 35px 20px;
+  text-align: center;
+}
+
+.pedido h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.pedido ul {
+  list-style: none;
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 0;
+}
+
+.pedido li {
+  background: white;
+  margin-bottom: 10px;
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.pedido li button {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.pedido h3 {
+  margin: 15px 0;
+  font-size: 1.3rem;
+}
+
+/* BOTÃO FINALIZAR */
+.finalizar {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.finalizar:hover {
+  background: #219150;
+}
+
+/* RESPONSIVO */
+@media (max-width: 600px) {
+  .topo h1 {
+      font-size: 2rem;
+  }
+
+  .card {
+      width: 90%;
+  }
+}
