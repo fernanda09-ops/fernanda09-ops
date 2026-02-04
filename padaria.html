@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Padaria Pão & Sabor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="pai.css">
+</head>
+<body>
+
+<header class="topo">
+    <h1>🥖 Padaria Pão & Sabor</h1>
+    <p>Atendimento rápido e pedidos online</p>
+</header>
+
+<section class="produtos">
+    <h2>Produtos</h2>
+
+    <div class="cards">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1608198093002-ad4e005484a9">
+            <h3>Pão Francês</h3>
+            <p>R$ 1,00</p>
+            <button onclick="adicionar('Pão Francês', 1)">Adicionar</button>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1604908177522-3a6c8b2a0f8d">
+            <h3>Bolo Caseiro</h3>
+            <p>R$ 15,00</p>
+            <button onclick="adicionar('Bolo Caseiro', 15)">Adicionar</button>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1608219959303-9c8c8db1b4d4">
+            <h3>Doces</h3>
+            <p>R$ 5,00</p>
+            <button onclick="adicionar('Doce', 5)">Adicionar</button>
+        </div>
+    </div>
+</section>
+
+<section class="pedido">
+    <h2>🛒 Seu Pedido</h2>
+    <ul id="lista"></ul>
+    <h3>Total: R$ <span id="total">0.00</span></h3>
+
+    <button class="finalizar" onclick="finalizar()">Finalizar Pedido</button>
+</section>
+
+<!-- JAVASCRIPT INCLUÍDO -->
+<script>
+    let total = 0;
+
+    function adicionar(nome, preco) {
+        const lista = document.getElementById("lista");
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            ${nome} - R$ ${preco.toFixed(2)}
+            <button onclick="remover(this, ${preco})">❌</button>
+        `;
+
+        lista.appendChild(li);
+        total += preco;
+        atualizarTotal();
+    }
+
+    function remover(botao, preco) {
+        botao.parentElement.remove();
+        total -= preco;
+        atualizarTotal();
+    }
+
+    function atualizarTotal() {
+        document.getElementById("total").textContent = total.toFixed(2);
+    }
+
+    function finalizar() {
+        if (total === 0) {
+            alert("⚠️ Adicione produtos ao pedido!");
+        } else {
+            alert("✅ Pedido finalizado!\nTotal: R$ " + total.toFixed(2));
+            document.getElementById("lista").innerHTML = "";
+            total = 0;
+            atualizarTotal();
+        }
+    }
+</script>
+
+</body>
+</html>
