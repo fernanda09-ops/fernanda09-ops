@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Autoatendimento - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-yellow-500 min-h-screen flex items-center justify-center">
+
+  <div class="bg-white w-full max-w-sm rounded-2xl shadow-lg p-6">
+
+    <h1 class="text-2xl font-bold text-center mb-4">
+      🥖 Faça seu pedido aqui
+    </h1>
+
+    <form onsubmit="entrar(event)" class="space-y-4">
+
+      <div>
+        <label class="text-sm text-gray-600">Nome do Cliente</label>
+        <input
+          id="nome"
+          type="text"
+          placeholder="Digite seu nome"
+          class="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          required
+        >
+      </div>
+
+      <div>
+        <label class="text-sm text-gray-600">Senha</label>
+        <input
+          id="senha"
+          type="password"
+          placeholder="Digite sua senha"
+          class="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          required
+        >
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-yellow-500 text-white py-3 rounded-xl font-semibold hover:bg-yellow-600 transition">
+        Entrar e Fazer Pedido
+      </button>
+
+      <p class="text-center mt-4 text-sm">
+        <a href="login.html" class="text-blue-600">
+          Não tem conta?Faça seu login
+        </a>
+      </p>
+
+    </form>
+
+    <p class="text-xs text-center text-gray-400 mt-4">
+      * Sistema de autoatendimento
+    </p>
+
+  </div>
+
+<script>
+function entrar(event) {
+  event.preventDefault();
+
+  const nome = document.getElementById("nome").value;
+  const senha = document.getElementById("senha").value;
+  
+  
+
+  if (nome.length < 3) {
+    alert("Digite um nome válido");
+    return;
+  }
+
+  if (senha.length < 4) {
+    alert("Senha inválida");
+    return;
+  }
+
+  
+}
+</script>
+
+</body>
+</html>
