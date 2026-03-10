@@ -1,0 +1,252 @@
+import React, { useState } from "react";
+import {
+  StyleSheet, Text, View, TextInput,
+  TouchableOpacity, ScrollView, Alert,
+  Linking, Image, Platform, SafeAreaView
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+export default function App() {
+  const [nome, setNome] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [horarioSelecionado, setHorarioSelecionado] = useState('');
+  const [cilioSelecionado, setCilioSelecionado] = useState('');
+
+  const horarios = ['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00'];
+  const cilios = [
+    { nome: 'Volume Brasileiro', preco: 'R$110,00', img: require('./assets/brasileiro.jpg') },
+    { nome: 'Mega Volume', preco: 'R$150,00', img: require('./assets/megavol.jpg') },
+    { nome: 'Volume Híbrido', preco: 'R$110,00', img: require('./assets/hibrido.jpg') },
+    { nome: 'Volume Russo', preco: 'R$160,00', img: require('./assets/russo.jpg') },
+    { nome: 'Volume Classic', preco: 'R$90,00', img: require('./assets/classic.jpg') },
+    { nome: 'Volume Egípcio', preco: 'R$130,00', img: require('./assets/egipcio.jpg') }
+  ];
+
+  const handleSubmit = () => {
+    if(!nome || !telefone || !horarioSelecionado || !cilioSelecionado){
+      Alert.alert("Erro","Preencha todos os campos!");
+      return;
+    }
+
+    const agendamento = {
+      nome,
+      telefone,
+      data: date.toLocaleDateString(),
+      horario: horarioSelecionado,
+      cilios: cilioSelecionado
+    };
+
+    Alert.alert(
+      "Pagamento de Entrada",
+      "Para confirmar seu agendamento é necessário pagar 50% agora.",
+      [
+        { text:"Cancelar", style:"cancel" },
+        { text:"Pagar 50%", onPress: () => {
+            Alert.alert("Pagamento","Pagamento registrado com sucesso!");
+            const mensagem = `Olá! Seu agendamento foi realizado:
+Nome: ${nome}
+Telefone: ${telefone}
+Data: ${date.toLocaleDateString()}
+Horário: ${horarioSelecionado}
+Cílios: ${cilioSelecionado}`;
+
+            const numeroWhats = "5527999725813";
+            const urlWhats = `https://wa.me/${numeroWhats}?text=${encodeURIComponent(mensagem)}`;
+            Linking.openURL(urlWhats).catch(() => console.log("Erro ao abrir WhatsApp"));
+          }
+        }
+      ]
+    );
+  };
+
+  return (
+    <SafeAreaView style={{flex:1, backgroundColor:'#f8e1f4'}}>
+      <ScrollView 
+        contentContainerStyle={styles.container} 
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.title}>Agende Seu Horário</Text>
+
+        <Text style={styles.label}>Nome da Cliente</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Digite seu nome"
+          value={nome}
+          onChangeText={setNome}
+        />
+
+        <Text style={styles.label}>Telefone</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Digite seu telefone"
+          keyboardType="phone-pad"
+          value={telefone}
+          onChangeText={setTelefone}
+        />
+
+        <Text style={styles.label}>Escolha a data</Text>
+        <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
+          <Text style={styles.dateButtonText}>Escolher Data: {date.toLocaleDateString()}</Text>
+        </TouchableOpacity>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              const currentDate = selectedDate || date;
+              setShowDatePicker(Platform.OS === "ios");
+              setDate(currentDate);
+            }}
+          />
+        )}
+
+        <Text style={styles.label}>Horários Disponíveis</Text>
+        <View style={styles.horariosContainer}>
+          {horarios.map(hora => (
+            <TouchableOpacity
+              key={hora}
+              style={[styles.horarioButton, horarioSelecionado === hora && styles.selectedButton]}
+              onPress={() => setHorarioSelecionado(hora)}
+            >
+              <Text style={[styles.horarioText, horarioSelecionado === hora && styles.selectedText]}>
+                {hora}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text style={styles.label}>Escolha o Tipo de Cílios</Text>
+        <View style={styles.ciliosContainer}>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {cilios.map(c => (
+              <TouchableOpacity
+                key={c.nome}
+                style={[styles.ciliosCard, cilioSelecionado === c.nome && styles.ciliosSelected]}
+                onPress={() => setCilioSelecionado(c.nome)}
+              >
+                <Image source={c.img} style={styles.ciliosImg} />
+                <Text style={styles.ciliosText}>{`${c.nome} ${c.preco}`}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+
+        <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
+          <Text style={styles.submitText}>Confirmar Agendamento</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container:{ 
+    padding:20, 
+    alignItems:'center',
+    paddingBottom:40
+  },
+  title:{ 
+    fontSize:24, 
+    fontWeight:'bold', 
+    color:'#d63384',
+    marginBottom:20 
+  },
+  label:{ 
+    fontWeight:'600', 
+    color:'#444', 
+    alignSelf:'flex-start', 
+    marginTop:10, 
+    marginBottom:5 
+  },
+  input:{ 
+    width:'100%', 
+    padding:10, 
+    borderRadius:10, 
+    borderWidth:1, 
+    borderColor:'#ccc', 
+    marginBottom:15 
+  },
+  horariosContainer:{ 
+    flexDirection:'row', 
+    flexWrap:'wrap', 
+    justifyContent:'space-between', 
+    marginBottom:15 
+  },
+  horarioButton:{ 
+    padding:10, 
+    borderRadius:10, 
+    backgroundColor:'#f8c8dc', 
+    marginBottom:10, 
+    minWidth:'22%', 
+    alignItems:'center' 
+  },
+  dateButton:{ 
+    backgroundColor:'#FFB6C1',
+    padding:12, 
+    borderRadius:10, 
+    alignItems:'center', 
+    marginBottom:15, 
+    width:'100%' 
+  },
+  dateButtonText:{ 
+    color:'white', 
+    fontWeight:'bold'
+  },
+  selectedButton:{ 
+    backgroundColor:'#d63384' 
+  },
+  horarioText:{ 
+    fontWeight:'bold', 
+    color:'#000' 
+  },
+  selectedText:{ 
+    color:'#fff' 
+  },
+  ciliosContainer:{ 
+    flexDirection:'row', 
+    flexWrap:'wrap', 
+    justifyContent:'space-between', 
+    marginBottom:20 
+  },
+  ciliosCard:{ 
+    width:120, 
+    borderWidth:2, 
+    borderColor:'#eee', 
+    borderRadius:15, 
+    overflow:'hidden', 
+    marginRight:10, 
+    alignItems:'center'
+  },
+  ciliosSelected:{ 
+    borderColor:'#d63384' 
+  },
+  ciliosImg:{ 
+    width:'100%', 
+    height:100, 
+    resizeMode:'cover' 
+  },
+  ciliosText:{ 
+    padding:5, 
+    fontWeight:'bold', 
+    color:'#444', 
+    textAlign:'center' 
+  },
+  submitBtn:{ 
+    width:'100%', 
+    padding:15, 
+    backgroundColor:'#d63384', 
+    borderRadius:12, 
+    alignItems:'center', 
+    marginBottom:30
+  },
+  submitText:{ 
+    color:'#fff', 
+    fontWeight:'bold', 
+    fontSize:16 
+  }
+});
